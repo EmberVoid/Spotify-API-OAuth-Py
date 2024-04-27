@@ -92,37 +92,35 @@ def refresh_token():
 
 @app.route('/home')
 def get_user():
-    if 'access_token' not in session:
-        return redirect('/login')
-    
-    if datetime.now().timestamp() > session ['expires_at']:
-        return redirect('/refresh-token')
-
-    headers = {
-        'Authorization' : f"Bearer {session['access_token']}"
-    }    
+    headers = verify_user_session()    
 
     response = requests.get(API_BASE_URL + 'me', headers=headers)
     user = response.json()
 
+    #return render_template('home.html')
     return jsonify(user)
 
 @app.route('/playlists')
 def get_playlists():
-    if 'access_token' not in session:
-        return redirect('/login')
-    
-    if datetime.now().timestamp() > session ['expires_at']:
-        return redirect('/refresh-token')
-
-    headers = {
-        'Authorization' : f"Bearer {session['access_token']}"
-    }    
+    headers = verify_user_session()
 
     response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
     playlists = response.json()
 
     return jsonify(playlists)
+
+def verify_user_session():
+    if 'access_token' not in session:
+        return redirect('/login')
+    
+    if datetime.now().timestamp() > session ['expires_at']:
+        return redirect('/refresh-token')
+
+    headers = {
+        'Authorization' : f"Bearer {session['access_token']}"
+    }   
+
+    return headers
     
 if __name__ == '__main__':
     debug_mode = app.config.get('DEBUG', False)
