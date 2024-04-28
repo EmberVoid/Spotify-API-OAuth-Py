@@ -26,8 +26,8 @@ API_BASE_URL = os.getenv('API_BASE_URL')
 
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+def start_login():
+    return render_template('login.html')
 
 @app.route('/login')
 def login():
@@ -91,14 +91,12 @@ def refresh_token():
         return redirect('/home')
 
 @app.route('/home')
-def get_user():
-    headers = verify_user_session()    
-
-    response = requests.get(API_BASE_URL + 'me', headers=headers)
-    user = response.json()
-
-    #return render_template('home.html')
-    return jsonify(user)
+def home():
+    user = get_user()
+    user_id = user.get("id")
+    user_image = user.get('images', [{}])[1].get('url', None)
+        
+    return render_template('home.html', username=user_id, userimage=user_image)
 
 @app.route('/playlists')
 def get_playlists():
@@ -108,6 +106,19 @@ def get_playlists():
     playlists = response.json()
 
     return jsonify(playlists)
+
+
+
+
+###Functions###
+
+def get_user():
+    headers = verify_user_session()    
+
+    response = requests.get(API_BASE_URL + 'me', headers=headers)
+    user = response.json()
+
+    return user
 
 def verify_user_session():
     if 'access_token' not in session:
