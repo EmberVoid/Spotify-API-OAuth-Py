@@ -25,9 +25,44 @@ TOKEN_URL = os.getenv('TOKEN_URL')
 API_BASE_URL = os.getenv('API_BASE_URL')
 
 
+#
+### App Routes ###
+#
+
 @app.route('/')
 def start_login():
     return render_template('login.html')
+
+@app.route('/home')
+def home():
+    user = get_user()
+    user_id = user.get("id")
+    user_image = user.get('images', [{}])[1].get('url', None)
+        
+    return render_template('home.html', username=user_id, userimage=user_image)
+
+@app.route('/playlists')
+def get_playlists():
+    #Verifies that the session is still alive
+    headers = verify_user_session()
+
+    #Gets the playlists of the account (gets all playlists)
+    playlist_list = get_playlist_list(headers)
+
+    #Separate the playlists in multiple lists
+    playlist_names = get_playlist_names(playlist_list)
+    playlist_urls = get_playlist_urls(playlist_list)
+    playlist_images = get_playlist_images(playlist_list)
+
+    #Merges the lists in a single list 
+    combined_list = get_combine_playlist(playlist_names, playlist_urls, playlist_images)
+
+    #Sends list to html engine to be processed
+    return render_template('playlists.html', combinedlist=combined_list)
+
+#
+### Login ###
+#
 
 @app.route('/login')
 def login():
@@ -40,7 +75,6 @@ def login():
         'scope': scope,
         'redirect_uri': REDIRECT_URI,
         'state': state,
-        'show_dialog': True
     }
 
     auth_url = f"{AUTH_URL}{urllib.parse.urlencode(params)}"
@@ -91,36 +125,22 @@ def refresh_token():
 
         return redirect('/home')
 
-@app.route('/home')
-def home():
-    user = get_user()
-    user_id = user.get("id")
-    user_image = user.get('images', [{}])[1].get('url', None)
-        
-    return render_template('home.html', username=user_id, userimage=user_image)
+#
+### Logout ###
+#
 
-@app.route('/playlists')
-def get_playlists():
-    #Verifies that the session is still alive
-    headers = verify_user_session()
-
-    #Gets the playlists of the account (gets all playlists)
-    playlist_list = get_playlist_list(headers)
-
-    #Separate the playlists in multiple lists
-    playlist_names = get_playlist_names(playlist_list)
-    playlist_urls = get_playlist_urls(playlist_list)
-    playlist_images = get_playlist_images(playlist_list)
-
-    #Merges the lists in a single list 
-    combined_list = get_combine_playlist(playlist_names, playlist_urls, playlist_images)
-
-    #Sends list to html engine to be processed
-    return render_template('playlists.html', combinedlist=combined_list)
+@app.route('/logout')
+def logout():
+    # Clear the session data
+    session.clear()
+    # Redirect to the login page or home page
+    return redirect('/')
+    #return redirect(url_for('login'))
 
 
-
-###Functions###
+#
+### Functions ###
+#
 
 def verify_user_session():
     if 'access_token' not in session:
