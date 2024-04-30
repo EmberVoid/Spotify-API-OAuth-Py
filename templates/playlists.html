@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playlist</title>
-</head>
+{% extends "base.html" %}
+{% block title %}Playlist{% endblock %}
 
+{% block content %}
 <style>
     ul.no-bullets {
         list-style-type: none; /* Removes the bullets */
@@ -13,14 +9,11 @@
         margin: 0; /* Removes margins */
     }
 </style>
-
-<body>
-    <h3><a href='/home'>Home</a></h3>
+<h3><a href='/dashboard'>Dashboard</a></h3>
     <ul class="no-bullets">
         {% for playlistnames, playlisturls, playlistimages in combinedlist %}
             <li> <a href='{{ playlisturls }}' target="_blank" >{{ playlistnames }}</a> </li>
             <li> <img src="{{ playlistimages }}" alt="Playlist image" style="width:150;height:150px;"></li>
         {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}

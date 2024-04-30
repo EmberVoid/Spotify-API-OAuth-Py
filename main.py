@@ -35,7 +35,7 @@ API_BASE_URL = os.getenv('API_BASE_URL')
 # Function to get headers or redirect if the session is invalid
 def get_headers_or_redirect():
     if 'access_token' not in session:
-        return redirect(url_for('go_to_root_page'))
+        return redirect(url_for('go_to_homepage'))
     
     elif datetime.now().timestamp() > session['expires_at']:
         return redirect(url_for('refresh_token'))
@@ -124,17 +124,17 @@ def get_combine_playlist(playlist_names, playlist_urls, playlist_images):
 #
 
 @app.route('/')
-def go_to_root_page():
-    return render_template('login.html')
+def go_to_homepage():
+    return render_template('homepage.html')
 
-@app.route('/home')
+@app.route('/dashboard')
 @verify_user_session
-def home():
+def user_dashboard():
     user = get_user()
     user_id = user.get("id")
     user_image = user.get('images', [{}])[1].get('url', None)
         
-    return render_template('home.html', username=user_id, userimage=user_image)
+    return render_template('dashboard.html', username=user_id, userimage=user_image)
 
 @app.route('/playlists')
 @verify_user_session
@@ -197,7 +197,7 @@ def callback():
         session['refresh_token'] = token_info['refresh_token']
         session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
 
-        return redirect(url_for('home'))
+        return redirect(url_for('user_dashboard'))
 
 @app.route('/refresh-token')
 def refresh_token():
@@ -218,7 +218,7 @@ def refresh_token():
         session['access_token'] = new_token_info['access_token']
         session['expires_at'] = datetime.now().timestamp() + new_token_info['expires_in']
 
-        return redirect(url_for('home'))
+        return redirect(url_for('user_dashboard'))
 
 #
 ### Logout ###
@@ -229,7 +229,7 @@ def logout():
     # Clear the session data
     session.clear()
     # Redirect to the login page or home page
-    return redirect(url_for('go_to_root_page'))
+    return redirect(url_for('go_to_homepage'))
     
 if __name__ == '__main__':
     debug_mode = app.config.get('DEBUG', False)
