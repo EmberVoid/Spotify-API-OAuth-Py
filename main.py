@@ -175,6 +175,7 @@ def login():
 
     return redirect(auth_url)
 
+
 @app.route('/callback/spotify')
 def callback():
     if 'error' in request.args:
@@ -196,12 +197,12 @@ def callback():
         session['refresh_token'] = token_info['refresh_token']
         session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
 
-        return redirect('/home')
+        return redirect(url_for('home'))
 
 @app.route('/refresh-token')
 def refresh_token():
     if 'refresh_token' not in session:
-        return redirect('/')
+        return redirect(url_for('/'))
     
     if datetime.now().timestamp() > session ['expires_at']:
         req_body = {
@@ -217,7 +218,7 @@ def refresh_token():
         session['access_token'] = new_token_info['access_token']
         session['expires_at'] = datetime.now().timestamp() + new_token_info['expires_in']
 
-        return redirect('/home')
+        return redirect(url_for('home'))
 
 #
 ### Logout ###
@@ -228,8 +229,7 @@ def logout():
     # Clear the session data
     session.clear()
     # Redirect to the login page or home page
-    return redirect('/')
-    #return redirect(url_for('login'))
+    return redirect(url_for('go_to_root_page'))
     
 if __name__ == '__main__':
     debug_mode = app.config.get('DEBUG', False)
