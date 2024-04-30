@@ -4,10 +4,14 @@ import requests
 import os
 
 from datetime import datetime
-from flask import Flask, redirect, jsonify, render_template, session, request
+from functools import wraps
+from werkzeug.wrappers import Response
+from flask import Flask, redirect, jsonify, render_template, url_for,session, request
 from dotenv import load_dotenv
 
-
+#
+### Flask setup ###
+#
 
 app = Flask(__name__)
 #config.py loads secret key
@@ -24,16 +28,107 @@ AUTH_URL = os.getenv('AUTH_URL')
 TOKEN_URL = os.getenv('TOKEN_URL')
 API_BASE_URL = os.getenv('API_BASE_URL')
 
+#
+### Functions ###
+#
+
+# Function to get headers or redirect if the session is invalid
+def get_headers_or_redirect():
+    if 'access_token' not in session:
+        return redirect(url_for('go_to_root_page'))
+    
+    elif datetime.now().timestamp() > session['expires_at']:
+        return redirect(url_for('refresh_token'))
+
+    return {'Authorization': f"Bearer {session['access_token']}"}
+
+# Decorator to verify user session
+def verify_user_session(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        response = get_headers_or_redirect()
+        if isinstance(response, Response):
+            return response
+        return f(*args, **kwargs)
+    return decorated_function
+
+def get_user():
+    headers = get_headers_or_redirect()
+    # Check if headers is a redirect response
+    if isinstance(headers, Response):
+        return headers
+
+    response = requests.get(API_BASE_URL + 'me', headers=headers)
+    user = response.json()
+    return user
+
+
+#Gets all the playlists of the user in a single json variable
+def get_playlist_list_json():
+    headers = get_headers_or_redirect()
+    # Check if headers is a redirect response
+
+    if isinstance(headers, Response):
+        return headers
+    
+    response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
+    playlists = response.json()
+
+    return playlists
+
+#Divide the single json from (get_playlist_list_json) into multiple lists
+##list with all the playlist names
+def get_playlist_names(playlist_list):
+    playlist_names = []
+    
+     # Iterate over each item in the 'items' list
+    for item in playlist_list.get('items', []):
+        # Add the 'name' to the names list
+        playlist_names.append(item.get('name'))
+
+    return playlist_names
+
+##list with all the playlist urls to spotify
+def get_playlist_urls(playlist_list):
+    playlist_urls = []
+
+    # Iterate over each item in the 'items' list
+    for item in playlist_list.get('items', []):
+        # Add the 'urls' to the url list
+        playlist_urls.append(item.get('external_urls', {}).get('spotify'))
+    
+    return playlist_urls
+
+##list with all the playlist images
+def get_playlist_images(playlist_list):
+    playlist_images = []
+
+    # Iterate over each item in the 'items' list
+    for item in playlist_list.get('items', []):
+        # Add the 'image' to the image url list
+        playlist_images.append(item['images'][0].get('url'))
+
+    return playlist_images
+
+#Gets all the previous lists, merges them into a single zip file then into a single interable list
+def get_combine_playlist(playlist_names, playlist_urls, playlist_images):
+    #Zip is used to combine lists into a zip object, however in the Jinja engine, it seems I was unable to sort or go
+    #throught the lists in any capacity to display them, seems like zip function returns an iterator, which can only be iterated over once.
+    #Converting the zip object back to a list allowed to be iterated on Jinja 
+    combined_list = list(zip(playlist_names, playlist_urls, playlist_images))
+
+    return combined_list
 
 #
 ### App Routes ###
 #
 
 @app.route('/')
-def start_login():
+def go_to_root_page():
     return render_template('login.html')
 
 @app.route('/home')
+@verify_user_session
 def home():
     user = get_user()
     user_id = user.get("id")
@@ -42,12 +137,10 @@ def home():
     return render_template('home.html', username=user_id, userimage=user_image)
 
 @app.route('/playlists')
+@verify_user_session
 def get_playlists():
-    #Verifies that the session is still alive
-    headers = verify_user_session()
-
     #Gets the playlists of the account (gets all playlists)
-    playlist_list = get_playlist_list(headers)
+    playlist_list = get_playlist_list_json()
 
     #Separate the playlists in multiple lists
     playlist_names = get_playlist_names(playlist_list)
@@ -59,6 +152,7 @@ def get_playlists():
 
     #Sends list to html engine to be processed
     return render_template('playlists.html', combinedlist=combined_list)
+
 
 #
 ### Login ###
@@ -107,7 +201,7 @@ def callback():
 @app.route('/refresh-token')
 def refresh_token():
     if 'refresh_token' not in session:
-        return redirect('/login')
+        return redirect('/')
     
     if datetime.now().timestamp() > session ['expires_at']:
         req_body = {
@@ -136,78 +230,6 @@ def logout():
     # Redirect to the login page or home page
     return redirect('/')
     #return redirect(url_for('login'))
-
-
-#
-### Functions ###
-#
-
-def verify_user_session():
-    if 'access_token' not in session:
-        return redirect('/login')
-    
-    if datetime.now().timestamp() > session ['expires_at']:
-        return redirect('/refresh-token')
-
-    headers = {
-        'Authorization' : f"Bearer {session['access_token']}"
-    }   
-
-    return headers
-
-def get_user():
-    headers = verify_user_session()    
-
-    response = requests.get(API_BASE_URL + 'me', headers=headers)
-    user = response.json()
-
-    return user
-
-#Gets all the playlists of the user in a single json variable
-def get_playlist_list(headers):
-    response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
-    playlists = response.json()
-
-    return playlists
-
-#Various gets to divide the single json into multiple lists
-def get_playlist_names(playlist_list):
-    playlist_names = []
-    
-     # Iterate over each item in the 'items' list
-    for item in playlist_list.get('items', []):
-        # Add the 'name' to the names list
-        playlist_names.append(item.get('name'))
-
-    return playlist_names
-
-def get_playlist_urls(playlist_list):
-    playlist_urls = []
-
-    # Iterate over each item in the 'items' list
-    for item in playlist_list.get('items', []):
-        # Add the 'urls' to the url list
-        playlist_urls.append(item.get('external_urls', {}).get('spotify'))
-    
-    return playlist_urls
-
-def get_playlist_images(playlist_list):
-    playlist_images = []
-
-    # Iterate over each item in the 'items' list
-    for item in playlist_list.get('items', []):
-        # Add the 'image' to the image url list
-        playlist_images.append(item['images'][0].get('url'))
-
-    return playlist_images
-
-def get_combine_playlist(playlist_names, playlist_urls, playlist_images):
-    #Zip is used to combine lists into a zip object, however in the Jinja engine, it seems I was unable to sort or go
-    #throught the lists in any capacity to display them, seems like zip function returns an iterator, which can only be iterated over once.
-    #Converting the zip object back to a list allowed to be iterated on Jinja 
-    combined_list = list(zip(playlist_names, playlist_urls, playlist_images))
-
-    return combined_list
     
 if __name__ == '__main__':
     debug_mode = app.config.get('DEBUG', False)
