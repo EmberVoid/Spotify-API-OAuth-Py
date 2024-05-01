@@ -9,7 +9,8 @@
         margin: 0; /* Removes margins */
     }
 </style>
-<h3><a href='/dashboard'>Dashboard</a></h3>
+
+<h3><a href="{{ url_for('user_dashboard') }}">Dashboard</a></h3>
     <ul class="no-bullets">
         {% for playlistnames, playlisturls, playlistimages in combinedlist %}
             <li> <a href='{{ playlisturls }}' target="_blank" >{{ playlistnames }}</a> </li>
