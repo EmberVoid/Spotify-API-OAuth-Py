@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from functools import wraps
 from werkzeug.wrappers import Response
+from flask_bootstrap import Bootstrap5
 from flask import Flask, redirect, jsonify, render_template, url_for,session, request
 from dotenv import load_dotenv
 
@@ -13,7 +14,10 @@ from dotenv import load_dotenv
 ### Flask setup ###
 #
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/')
+
+#start boostrap
+bootstrap = Bootstrap5(app)
 #config.py loads secret key
 app.config.from_object('config')
 secret_key = app.config['SECRET_KEY']
