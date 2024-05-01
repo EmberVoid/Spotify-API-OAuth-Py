@@ -13,4 +13,6 @@ env.bak/
 venv.bak/
 config.py
 
-static/img/*
+# Static imgs
+static/img/
+/static/img/
