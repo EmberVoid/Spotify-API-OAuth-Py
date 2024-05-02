@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/128/1834/1834342.png" title="audio icons">
+    {{ bootstrap.load_css() }}
     {% block styles %}
-        <link rel="stylesheet" type="text/css" href="/css/style.css">
-        <!-- Bootstrap CSS -->
-        {{ bootstrap.load_css() }}
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <!-- Bootstrap CSS -->
     {% endblock %}
     <title>{% block title %}{% endblock %}</title>
 </head>
-<body>
-    {% block content %}{% endblock %}
 
+<body>
+    {% block content %}
+    {% endblock %}
+
+    {{ bootstrap.load_js() }}
     {% block scripts %}
-        {{ bootstrap.load_js() }}
     {% endblock %}
 </body>
+
 </html>

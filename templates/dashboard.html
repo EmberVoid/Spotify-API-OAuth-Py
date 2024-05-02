@@ -18,5 +18,47 @@
       </div>
   </header>
 
-    <a href="{{ url_for('get_playlists') }}">get playlists</a>
+    <button id="load-playlists">Load Playlists</button>
+
+    <div class="row flex-nowrap overflow-auto"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('load-playlists').addEventListener('click', function () {
+        // Make an AJAX request to the /playlists route
+        fetch('/playlists')
+            .then(response => response.json())
+            .then(data => {
+                // Process the data and update UI cards
+                console.log(data); // Replace with your actual logic
+                const playlistContainer = document.querySelector('.row.flex-nowrap.overflow-auto');
+                playlistContainer.innerHTML = ''; // Clear existing cards
+
+                data.playlists.forEach(playlist => {
+                    const card = `
+                        <div class="card mb-3" style="max-width: 540px;">
+                            <div class="row g-0">
+                                <div class="col-md-4 text-center">
+                                    <img src="${playlist[2]}" alt="Playlist image" class="img-fluid rounded-start" style="height: 180px;">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <p class="card-text text-wrap"><b>${playlist[0]}</b></p>
+                                            <a href="${playlist[1]}" target="_blank" class="btn btn-primary">Hear on Spotify</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    playlistContainer.insertAdjacentHTML('beforeend', card);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching playlists:', error);
+            });
+    });
+</script>
 {% endblock %}

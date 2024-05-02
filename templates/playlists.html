@@ -5,27 +5,27 @@
 
 
 <h3><a href="{{ url_for('user_dashboard') }}">Dashboard</a></h3>
-    <div class="container-fluid">
-        <div class="row flex-nowrap overflow-auto">
-            {% for playlistnames, playlisturls, playlistimages in combinedlist %}
-            <div class="card mb-3" style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-4 text-center">
-                        <img src="{{ playlistimages }}" alt="Playlist image" class="img-fluid rounded-start"
-                            style="height: 180px;">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
+<div class="container-fluid">
+    <div class="row flex-nowrap overflow-auto">
+        {% for playlistnames, playlisturls, playlistimages in combinedlist %}
+        <div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+                <div class="col-md-4 text-center">
+                    <img src="{{ playlistimages }}" alt="Playlist image" class="img-fluid rounded-start"
+                        style="height: 180px;">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
                         <div class="mb-3">
                             <p class="card-text text-wrap"><b>{{ playlistnames }}</b></p>
                             <a href='{{ playlisturls }}' target="_blank" class="btn btn-primary">Hear on Spotify</a>
                         </div>
                     </div>
-                    </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
     </div>
-
-    {% endblock %}
+</div>
+<button id="load-playlists">Load Playlists</button>
+{% endblock %}

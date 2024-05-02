@@ -155,7 +155,9 @@ def get_playlists():
     combined_list = get_combine_playlist(playlist_names, playlist_urls, playlist_images)
 
     #Sends list to html engine to be processed
-    return render_template('playlists.html', combinedlist=combined_list)
+    #return combined_list
+    return jsonify({'playlists': combined_list})
+
 
 
 #
@@ -173,6 +175,7 @@ def login():
         'scope': scope,
         'redirect_uri': REDIRECT_URI,
         'state': state,
+        'show_dialog': True
     }
 
     auth_url = f"{AUTH_URL}{urllib.parse.urlencode(params)}"
