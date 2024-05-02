@@ -3,8 +3,20 @@
 
 {% block content %}
 
-    <h1>Hello, {{ username|title }}</h1>
-    <img src="{{ userimage }}" alt="userImage" style="width:300px;height:300px;">
+<header class="p-3 mb-3 border-bottom">
+    <div class="d-flex align-items-center">
+        <b class="w-100 me-3"> Hello, {{ username|title }}! </b>
+
+        <div class="flex-shrink-0 dropdown">
+          <a href="#" class="d-block text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{{ userimage }}" alt="userImage" width="32" height="32" class="rounded-circle">
+          </a>
+          <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Log out</a></li>
+          </ul>
+        </div>
+      </div>
+  </header>
+
     <a href="{{ url_for('get_playlists') }}">get playlists</a>
-    <a href="{{ url_for('logout') }}">Logout</a>
 {% endblock %}
