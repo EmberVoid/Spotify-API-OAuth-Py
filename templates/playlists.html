@@ -1,16 +1,31 @@
 {% extends "base.html" %}
 {% block title %}Playlist{% endblock %}
 
-{% block styles %}
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
-{% endblock %}
-
 {% block content %}
+
+
 <h3><a href="{{ url_for('user_dashboard') }}">Dashboard</a></h3>
-    <ul class="no-bullets">
-        {% for playlistnames, playlisturls, playlistimages in combinedlist %}
-            <li> <a href='{{ playlisturls }}' target="_blank" >{{ playlistnames }}</a> </li>
-            <li> <img src="{{ playlistimages }}" alt="Playlist image" style="width:150;height:150px;"></li>
-        {% endfor %}
-    </ul>
-{% endblock %}
+    <div class="container-fluid">
+        <div class="row flex-nowrap overflow-auto">
+            {% for playlistnames, playlisturls, playlistimages in combinedlist %}
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4 text-center">
+                        <img src="{{ playlistimages }}" alt="Playlist image" class="img-fluid rounded-start"
+                            style="height: 180px;">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                        <div class="mb-3">
+                            <p class="card-text text-wrap"><b>{{ playlistnames }}</b></p>
+                            <a href='{{ playlisturls }}' target="_blank" class="btn btn-primary">Hear on Spotify</a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% endblock %}
