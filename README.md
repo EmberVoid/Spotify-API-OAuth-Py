@@ -14,3 +14,4 @@ Add Searcher functionality
 --Footer
 Vinyl icons created by Freepik - Flaticon
 Spotify sketch icons created by Fathema Khanom - Flaticon
+Miscellaneous icons created by ppangman - Flaticon

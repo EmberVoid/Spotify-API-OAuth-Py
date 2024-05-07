@@ -326,6 +326,13 @@ def logout():
     session.clear()
     # Redirect to the login page or home page
     return redirect(url_for('go_to_homepage'))
+
+#
+### Error Handling ###
+#
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
     
 if __name__ == '__main__':
     debug_mode = app.config.get('DEBUG', False)
