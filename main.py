@@ -131,14 +131,18 @@ def get_artist_list_json(artist_name):
     if isinstance(headers, Response):
         return headers
     
-    url = f"{API_BASE_URL}search?q={artist_name}&type=artist&limit=3"
+    #"Search for Item" Spotify API, limited to 3 items
+    url = f"{API_BASE_URL}search?q={artist_name}&type=artist&limit=3" #https: //api.spotify.com/v1/search?q={USERINPUT}&type=artist&limit=3
     response = requests.get(url, headers=headers)
-    artist_list_json = response.json()
+    artist_list_json = response.json() #This returns a big JSON with a lot of information
 
     return artist_list_json
 
 def get_artist_ids_json(artist_search_result):
+    #For this specific scenario we don't require most of the JSON from artist_list_json, only the IDs
     artist_ids = [artist["id"] for artist in artist_search_result["artists"]["items"]]
+    #For example this returns similar to:
+    #['4zjO8Jhi2pciJJzd8Q6rga', '5d649pWJhCaGTei93Ez0jZ', '6yUy3tj1ySuBdAl6W7ECAl']
 
     return artist_ids
 
@@ -149,6 +153,8 @@ def get_artist_top_songs_json(artist_ids):
     if isinstance(headers, Response):
         return headers
     
+    #Get Artist's Top Tracks Spotify API, this case the first artist is the only one retrieve
+    #As it is most likely the best match for the search 
     url = f"{API_BASE_URL}artists/{artist_ids[0]}/top-tracks"
     response = requests.get(url, headers=headers)
     artist_top_songs_json = response.json()
@@ -156,9 +162,12 @@ def get_artist_top_songs_json(artist_ids):
     return artist_top_songs_json
 
 def get_format_track_info_list(artist_top_songs):
+    #Similarly the top 10 tracks also gather a lot of information.
+    #But for this example we only require a handful of details to create the UI cards
     track_info_list = []
     
-    # Iterate through each track in the JSON data
+    #We create an empty list and then
+    #iterate through each track in the JSON data to get the data needed for the UI cards.
     for track in artist_top_songs["tracks"]:
         track_info = {
             "Track Name": track["name"],
@@ -215,10 +224,13 @@ def search_any_artist_match():
         data = request.get_json()
         artist_name = data.get('artistName')
 
-        # Perform the search based on artist_name
+        #Perform the search based on artist_name
         artist_search_result = get_artist_list_json(artist_name)
+        #Gets the ID of the artists
         artist_ids = get_artist_ids_json(artist_search_result)
+        #Uses the first ID to get the top 10 songs
         artist_top_songs = get_artist_top_songs_json(artist_ids)
+        #Gets only the necesary data from the 10 songs
         format_track_info_list = get_format_track_info_list(artist_top_songs)
 
         return jsonify({'tracks': format_track_info_list})
