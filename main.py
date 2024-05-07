@@ -157,7 +157,6 @@ def get_artist_top_songs_json(artist_ids):
 
 def get_format_track_info_list(artist_top_songs):
     track_info_list = []
-    print(artist_top_songs)
     
     # Iterate through each track in the JSON data
     for track in artist_top_songs["tracks"]:
@@ -169,13 +168,6 @@ def get_format_track_info_list(artist_top_songs):
             "Track Preview URL": track["preview_url"]
         }
         track_info_list.append(track_info)
-
-# Print the list of track information
-    for idx, track_info in enumerate(track_info_list, start=1):
-        print(f"Track {idx}:")
-        for key, value in track_info.items():
-            print(f"  {key}: {value}")
-        print()
 
     return track_info_list
 
