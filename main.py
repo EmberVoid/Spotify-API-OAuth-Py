@@ -116,12 +116,18 @@ def get_playlist_images(playlist_list):
 
 #Gets all the previous lists, merges them into a single zip file then into a single interable list
 def get_combine_playlist(playlist_names, playlist_urls, playlist_images):
-    #Zip is used to combine lists into a zip object, however in the Jinja engine, it seems I was unable to sort or go
-    #throught the lists in any capacity to display them, seems like zip function returns an iterator, which can only be iterated over once.
-    #Converting the zip object back to a list allowed to be iterated on Jinja 
-    combined_list = list(zip(playlist_names, playlist_urls, playlist_images))
+    track_list = []
+    
+    # Combine the lists into a single list of dictionaries
+    for name, url, img_url in zip(playlist_names, playlist_urls, playlist_images):
+        track_info = {
+            "Playlist Name": name,
+            "Playlist URL": url,
+            "Image URL": img_url
+        }
+        track_list.append(track_info)
 
-    return combined_list
+    return track_list
 
 #Try to get an artist from the search
 def get_artist_list_json(artist_name):

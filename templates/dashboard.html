@@ -8,23 +8,24 @@
         <b class="w-100 me-3"> Hello, {{ username|title }}! </b>
 
         <div class="flex-shrink-0 dropdown">
-          <a href="#" class="d-block text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="{{ userimage }}" alt="userImage" width="32" height="32" class="rounded-circle">
-          </a>
-          <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Log out</a></li>
-          </ul>
+            <a href="#" class="d-block text-decoration-none dropdown-toggle" id="dropdownUser2"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{ userimage }}" alt="userImage" width="32" height="32" class="rounded-circle">
+            </a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Log out</a></li>
+            </ul>
         </div>
-      </div>
-  </header>
+    </div>
+</header>
 
-    <button id="load-playlists">Load Playlists</button>
+<button id="load-playlists">Load Playlists</button>
 
-    <div class="row flex-nowrap overflow-auto" id="playlist_cards"></div>
+<div class="row flex-nowrap overflow-auto" id="playlist_cards"></div>
 
-    <a href="{{ url_for('go_to_searcher') }}">
-        <button id="goto-searcher">Searcher</button>
-    </a>
+<a href="{{ url_for('go_to_searcher') }}">
+    <button id="goto-searcher">Searcher</button>
+</a>
 {% endblock %}
 
 {% block scripts %}
@@ -42,21 +43,21 @@
 
                 data.playlists.forEach(playlist => {
                     const card = `
-                        <div class="card mb-3" style="max-width: 540px;">
-                            <div class="row g-0">
-                                <div class="col-md-4 text-center">
-                                    <img src="${playlist[2]}" alt="Playlist image" class="img-fluid rounded-start" style="height: 180px;">
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <p class="card-text text-wrap"><b>${playlist[0]}</b></p>
-                                            <a href="${playlist[1]}" target="_blank" class="btn btn-primary">Hear on Spotify</a>
-                                        </div>
+                    <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-4 text-center">
+                                <img src="${playlist["Image URL"]}" alt="Playlist image" class="img-fluid rounded-start" style="height: 180px;">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <p class="card-text text-wrap"><b>${playlist["Playlist Name"]}</b></p>
+                                        <a href="${playlist["Playlist URL"]}" target="_blank" class="btn btn-primary">Hear on Spotify</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     `;
                     playlistContainer.insertAdjacentHTML('beforeend', card);
                 });
