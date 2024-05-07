@@ -43,9 +43,15 @@
         </h2>
         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
             <div class="accordion-body">
-                <a href="{{ url_for('go_to_searcher') }}">
-                    <button id="goto-searcher">Searcher</button>
-                </a>
+
+                <div class="container-fluid">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="inputArtistName" placeholder="Artist Name">
+                        <button type="button" class="btn btn-outline-primary" id="inputArtistNameBtn">Search</button>
+                    </div>
+
+                    <div class="row flex-nowrap overflow-auto" id="track_cards"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -92,6 +98,71 @@
             });
     });
 </script>
+<!--Searcher-->
+<script>
+    var input = document.querySelector('.form-control'); // Get the input element
 
+    // Execute a function when the user presses a key on the keyboard
+    input.addEventListener("keypress", function (event) {
+        // If the user presses the "Enter" key
+        if (event.key === "Enter") {
+            event.preventDefault(); // Cancel the default action (form submission)
+            document.getElementById("inputArtistNameBtn").click(); // Trigger the button element with a click
+        }
+    });
+
+    // Add a click event listener to the search button
+    document.getElementById("inputArtistNameBtn").addEventListener("click", function () {
+        searchArtist(input.value); // Call the search function
+    });
+
+    // Function to send the artist name to Flask
+    function searchArtist(artistName) {
+        fetch('/search_any_artist_match', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ artistName: artistName })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Process the data and update UI cards
+                console.log(data); // Replace with your actual logic
+                const trackContainer = document.getElementById('track_cards');
+                trackContainer.innerHTML = ''; // Clear existing cards
+
+                data.tracks.forEach(track => {
+                    const card = `
+                        <div class="card mb-3" style="max-width: 540px;">
+                            <div class="row g-0">
+                                <div class="col-md-4 text-center">
+                                    <img src="${track['Album Image URL']}" alt="${track['Track Name']}" class="img-fluid rounded-start" style="height: 180px;">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <p class="card-text text-wrap"><b>${track['Track Name']}</b></p>
+                                            <p>Artist: ${track['Album Artist Name']}</p>
+                                            <a href="${track['Album URL']}" target="_blank" class="btn btn-primary">View on Spotify</a>
+                                            <audio controls>
+                                                <source src="${track['Track Preview URL']}" type="audio/mpeg">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    trackContainer.insertAdjacentHTML('beforeend', card);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+</script>
 
 {% endblock %}
