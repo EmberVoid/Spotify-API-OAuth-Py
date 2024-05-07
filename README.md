@@ -1,6 +1,9 @@
 # Basic Web App using Spotify API 
 This is a work in progress for learning python and API usage
 
+Start app:
+pipenv run python main.py
+
 Work-in-progress
 ToDo:
 On current implementation it seems that playlists.html and style.css may no longer be needed, review for deletion.

@@ -123,6 +123,64 @@ def get_combine_playlist(playlist_names, playlist_urls, playlist_images):
 
     return combined_list
 
+#Try to get an artist from the search
+def get_artist_list_json(artist_name):
+    headers = get_headers_or_redirect()
+    # Check if headers is a redirect response
+
+    if isinstance(headers, Response):
+        return headers
+    
+    url = f"{API_BASE_URL}search?q={artist_name}&type=artist&limit=3"
+    response = requests.get(url, headers=headers)
+    artist_list_json = response.json()
+
+    return artist_list_json
+
+def get_artist_ids_json(artist_search_result):
+    artist_ids = [artist["id"] for artist in artist_search_result["artists"]["items"]]
+
+    return artist_ids
+
+def get_artist_top_songs_json(artist_ids):
+    headers = get_headers_or_redirect()
+    # Check if headers is a redirect response
+
+    if isinstance(headers, Response):
+        return headers
+    
+    url = f"{API_BASE_URL}artists/{artist_ids[0]}/top-tracks"
+    response = requests.get(url, headers=headers)
+    artist_top_songs_json = response.json()
+
+    return artist_top_songs_json
+
+def get_format_track_info_list(artist_top_songs):
+    track_info_list = []
+    print(artist_top_songs)
+    
+    # Iterate through each track in the JSON data
+    for track in artist_top_songs["tracks"]:
+        track_info = {
+            "Track Name": track["name"],
+            "Album Artist Name": track["album"]["artists"][0]["name"],
+            "Album URL": track["album"]["external_urls"]["spotify"],
+            "Album Image URL": track["album"]["images"][0]["url"],
+            "Track Preview URL": track["preview_url"]
+        }
+        track_info_list.append(track_info)
+
+# Print the list of track information
+    for idx, track_info in enumerate(track_info_list, start=1):
+        print(f"Track {idx}:")
+        for key, value in track_info.items():
+            print(f"  {key}: {value}")
+        print()
+
+    return track_info_list
+
+    
+
 #
 ### App Routes ###
 #
@@ -158,7 +216,28 @@ def get_playlists():
     #return combined_list
     return jsonify({'playlists': combined_list})
 
+@app.route('/search_any_artist_match', methods=['POST'])
+@verify_user_session
+def search_any_artist_match():
+    try:
+        data = request.get_json()
+        artist_name = data.get('artistName')
 
+        # Perform the search based on artist_name
+        artist_search_result = get_artist_list_json(artist_name)
+        artist_ids = get_artist_ids_json(artist_search_result)
+        artist_top_songs = get_artist_top_songs_json(artist_ids)
+        format_track_info_list = get_format_track_info_list(artist_top_songs)
+
+        return jsonify({'tracks': format_track_info_list})
+    
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/searcher')
+@verify_user_session
+def go_to_searcher():
+    return render_template('searcher.html')
 
 #
 ### Login ###

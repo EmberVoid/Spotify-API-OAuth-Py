@@ -20,10 +20,15 @@
 
     <button id="load-playlists">Load Playlists</button>
 
-    <div class="row flex-nowrap overflow-auto"></div>
+    <div class="row flex-nowrap overflow-auto" id="playlist_cards"></div>
+
+    <a href="{{ url_for('go_to_searcher') }}">
+        <button id="goto-searcher">Searcher</button>
+    </a>
 {% endblock %}
 
 {% block scripts %}
+<!--Playlist-->
 <script>
     document.getElementById('load-playlists').addEventListener('click', function () {
         // Make an AJAX request to the /playlists route
@@ -32,7 +37,7 @@
             .then(data => {
                 // Process the data and update UI cards
                 console.log(data); // Replace with your actual logic
-                const playlistContainer = document.querySelector('.row.flex-nowrap.overflow-auto');
+                const playlistContainer = document.getElementById('playlist_cards');
                 playlistContainer.innerHTML = ''; // Clear existing cards
 
                 data.playlists.forEach(playlist => {
@@ -61,4 +66,6 @@
             });
     });
 </script>
+
+
 {% endblock %}
