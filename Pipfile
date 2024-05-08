@@ -8,6 +8,7 @@ flask = "*"
 requests = "*"
 python-dotenv = "*"
 bootstrap-flask = "*"
+waitress = "*"
 
 [dev-packages]
 

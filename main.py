@@ -335,6 +335,5 @@ def not_found_error(error):
     return render_template('404.html'), 404
     
 if __name__ == '__main__':
-    debug_mode = app.config.get('DEBUG', False)
-
-    app.run(debug=debug_mode)
+    from waitress import serve
+    serve(app, host="127.0.0.1", port=8080)
