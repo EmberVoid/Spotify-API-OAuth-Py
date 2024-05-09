@@ -21,13 +21,13 @@ bootstrap = Bootstrap5(app)
 secret_key = os.environ.get("SECRET_KEY")
 
 # Access environment variables directly from the environment
-CLIENT_ID = os.environ.get('CLIENT_ID')
-CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-REDIRECT_URI = os.environ.get('REDIRECT_URI')
+CLIENT_ID = os.environ.get("CLIENT_ID")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+REDIRECT_URI = os.environ.get("REDIRECT_URI")
 
-AUTH_URL = os.environ.get('AUTH_URL')
-TOKEN_URL = os.environ.get('TOKEN_URL')
-API_BASE_URL = os.environ.get('API_BASE_URL')
+AUTH_URL = os.environ.get("AUTH_URL")
+TOKEN_URL = os.environ.get("TOKEN_URL")
+API_BASE_URL = os.environ.get("TOKEN_URL")
 
 #
 ### Functions ###
