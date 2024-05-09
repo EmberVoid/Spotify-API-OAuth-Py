@@ -8,7 +8,7 @@ flask = "*"
 requests = "*"
 python-dotenv = "*"
 bootstrap-flask = "*"
-waitress = "*"
+gunicorn = "*"
 
 [dev-packages]
 

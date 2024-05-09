@@ -331,6 +331,6 @@ def logout():
 def not_found_error(error):
     return render_template('404.html'), 404
     
-if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=8080)
+##Update app serve for Azure Web App usage
+##In Azure App Service we don’t need to use Waitress directly. 
+## Instead,we configure Azure to run the app using a different web server (usually Gunicorn or uWSGI).
