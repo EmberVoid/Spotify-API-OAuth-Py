@@ -18,7 +18,7 @@ app = Flask(__name__, static_folder='static', static_url_path='/')
 #start boostrap
 bootstrap = Bootstrap5(app)
 #config.py loads secret key
-secret_key = os.environ.get("SECRET_KEY")
+app.secret_key = os.urandom(16)
 
 # Access environment variables directly from the environment
 CLIENT_ID = os.environ.get("CLIENT_ID")
@@ -27,7 +27,7 @@ REDIRECT_URI = os.environ.get("REDIRECT_URI")
 
 AUTH_URL = os.environ.get("AUTH_URL")
 TOKEN_URL = os.environ.get("TOKEN_URL")
-API_BASE_URL = os.environ.get("TOKEN_URL")
+API_BASE_URL = os.environ.get("API_BASE_URL")
 
 #
 ### Functions ###
@@ -264,7 +264,7 @@ def login():
         'show_dialog': True
     }
 
-    auth_url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"
+    auth_url = f"{AUTH_URL}{urllib.parse.urlencode(params)}"
 
     return redirect(auth_url)
 
