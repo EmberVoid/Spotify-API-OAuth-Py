@@ -264,7 +264,7 @@ def login():
         'show_dialog': True
     }
 
-    auth_url = f"{AUTH_URL}{urllib.parse.urlencode(params)}"
+    auth_url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"
 
     return redirect(auth_url)
 
