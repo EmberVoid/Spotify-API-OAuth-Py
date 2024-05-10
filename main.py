@@ -9,6 +9,13 @@ from werkzeug.wrappers import Response
 from flask_bootstrap import Bootstrap5
 from flask import Flask, redirect, jsonify, render_template, url_for,session, request
 
+# Import the `configure_azure_monitor()` function from the
+# `azure.monitor.opentelemetry` package.
+from azure.monitor.opentelemetry import configure_azure_monitor
+
+# Import the tracing api from the `opentelemetry` package.
+from opentelemetry import trace
+
 #
 ### Flask setup ###
 #
@@ -29,6 +36,11 @@ AUTH_URL = os.environ.get("AUTH_URL")
 TOKEN_URL = os.environ.get("TOKEN_URL")
 API_BASE_URL = os.environ.get("API_BASE_URL")
 
+AI_CONNECTION_STRING = os.environ.get("AI_CONNECTION_STRING")
+
+# Configure OpenTelemetry to use Azure Monitor with the 
+# AI_CONNECTION_STRING environment variable.
+configure_azure_monitor(connection_string=AI_CONNECTION_STRING,)
 #
 ### Functions ###
 #
