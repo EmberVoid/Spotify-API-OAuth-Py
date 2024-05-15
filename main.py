@@ -267,13 +267,14 @@ def login():
     state = secrets.token_hex(16)
     scope = 'user-read-private user-read-email'
 
+    #change 'show_dialog': True to force showing up the spotify login
     params ={
         'client_id': CLIENT_ID,
         'response_type': 'code',
         'scope': scope,
         'redirect_uri': REDIRECT_URI,
         'state': state,
-        'show_dialog': True
+        'show_dialog': False
     }
 
     auth_url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"
